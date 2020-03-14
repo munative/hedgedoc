@@ -23,6 +23,11 @@ import {
   saveStorageHistoryToServer
 } from './history'
 
+import {
+  getWorkspaceNotes,
+  parseToWorkspaceNotes
+} from './workspace'
+
 import { saveAs } from 'file-saver'
 import List from 'list.js'
 import S from 'string'
@@ -32,7 +37,7 @@ require('./locale')
 require('../css/cover.css')
 require('../css/site.css')
 
-const options = {
+const historyListOptions = {
   valueNames: ['id', 'text', 'timestamp', 'fromNow', 'time', 'tags', 'pinned'],
   item: `<li class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
           <span class="id" style="display:none;"></span>
@@ -58,14 +63,39 @@ const options = {
     outerWindow: 1
   }]
 }
-const historyList = new List('history', options)
+const historyList = new List('history', historyListOptions)
+
+const workspaceNotesListOptions = {
+  valueNames: ['id', 'title', 'shortid', 'permission', 'updatedAt', 'updatedAtTimestamp', 'ownerId', 'tags'],
+  item: `<li class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+          <span class="id" style="display:none;"></span>
+          <a href="#">
+            <div class="item">
+              <div class="ui-history-pin fa fa-thumb-tack fa-fw"></div>
+              <div class="ui-history-close fa fa-close fa-fw" data-toggle="modal" data-target=".delete-history-modal"></div>
+              <div class="content">
+                <h4 class="title"></h4>
+                <p>
+                  <i class="updatedAt"></i>
+                </p>
+                <p class="tags"></p>
+              </div>
+            </div>
+          </a>
+        </li>`,
+  page: 18,
+  pagination: [{
+    outerWindow: 1
+  }]
+}
+const workspaceNotesList = new List('workspace', workspaceNotesListOptions)
 
 window.migrateHistoryFromTempCallback = pageInit
 setloginStateChangeEvent(pageInit)
 
 pageInit()
 
-function pageInit () {
+function pageInit() {
   checkIfAuth(
     data => {
       $('.ui-signin').hide()
@@ -77,6 +107,10 @@ function pageInit () {
       $('.ui-signout').show()
       $('.ui-workspace').click()
       parseServerToHistory(historyList, parseHistoryCallback)
+      
+      getWorkspaceNotes(workspaceNotesList, (list, workspaceNotes)=>{
+        parseToWorkspaceNotes(list, workspaceNotes, getWorkspaceNotesCallback)
+      })
     },
     () => {
       $('.ui-signin').show()
@@ -121,13 +155,13 @@ $('.ui-workspace').click(() => {
   }
 })
 
-function checkHistoryList () {
+function checkHistoryList() {
   if ($('#history-list').children().length > 0) {
-    $('.pagination').show()
+    $('#pagination-history').show()
     $('.ui-nohistory').hide()
     $('.ui-import-from-browser').hide()
   } else if ($('#history-list').children().length === 0) {
-    $('.pagination').hide()
+    $('#pagination-history').hide()
     $('.ui-nohistory').slideDown()
     getStorageHistory(data => {
       if (data && data.length > 0 && getLoginState() && historyList.items.length === 0) {
@@ -137,11 +171,11 @@ function checkHistoryList () {
   }
 }
 
-function parseHistoryCallback (list, notehistory) {
+function parseHistoryCallback(list, notehistory) {
   checkHistoryList()
   // sort by pinned then timestamp
   list.sort('', {
-    sortFunction (a, b) {
+    sortFunction(a, b) {
       const notea = a.values()
       const noteb = b.values()
       if (notea.pinned && !noteb.pinned) {
@@ -211,7 +245,50 @@ historyList.on('updated', e => {
   $('.ui-history-pin').on('click', historyPinClick)
 })
 
-function historyCloseClick (e) {
+function getWorkspaceNotesCallback(list, workspaceNotes) {
+  list.clear()
+  list.add(workspaceNotes)
+  list.sort('', {
+    sortFunction(a, b) {
+      const notea = a.values()
+      const noteb = b.values()
+      if (notea.updatedAt > noteb.updatedAt) {
+        return -1
+      } else if (notea.updatedAt < noteb.updatedAt) {
+        return 1
+      } else {
+        return 0
+      }
+    }
+  })
+}
+
+// update items whenever list updated
+workspaceNotesList.on('updated', e => {
+  for (let i = 0, l = e.items.length; i < l; i++) {
+    const item = e.items[i]
+    if (item.visible()) {
+      const itemEl = $(item.elm)
+      const values = item._values
+      const a = itemEl.find('a')
+      const tagsEl = itemEl.find('.tags')
+      // parse link to element a
+      a.attr('href', `${serverurl}/${values.id}`)
+      // parse tags
+      const tags = values.tags
+      if (tags && tags.length > 0 && tagsEl.children().length <= 0) {
+        const labels = []
+        for (let j = 0; j < tags.length; j++) {
+          // push into the item label
+          labels.push(`<span class='label label-default'>${tags[j]}</span>`)
+        }
+        tagsEl.html(labels.join(' '))
+      }
+    }
+  }
+})
+
+function historyCloseClick(e) {
   e.preventDefault()
   const id = $(this).closest('a').siblings('span').html()
   const value = historyList.get('id', id)[0]._values
@@ -221,7 +298,7 @@ function historyCloseClick (e) {
   deleteId = id
 }
 
-function historyPinClick (e) {
+function historyPinClick(e) {
   e.preventDefault()
   const $this = $(this)
   const id = $this.closest('a').siblings('span').html()
@@ -260,7 +337,7 @@ function historyPinClick (e) {
 // auto update item fromNow every minutes
 setInterval(updateItemFromNow, 60000)
 
-function updateItemFromNow () {
+function updateItemFromNow() {
   const items = $('.item').toArray()
   for (let i = 0; i < items.length; i++) {
     const item = $(items[i])
@@ -272,7 +349,7 @@ function updateItemFromNow () {
 var clearHistory = false
 var deleteId = null
 
-function deleteHistory () {
+function deleteHistory() {
   checkIfAuth(() => {
     deleteServerHistory(deleteId, (err, result) => {
       if (!err) {
@@ -363,7 +440,7 @@ $('.ui-refresh-history').click(() => {
   $('.search').val('')
   historyList.search()
   $('#history-list').slideUp('fast')
-  $('.pagination').hide()
+  $('#pagination-history').hide()
 
   resetCheckAuth()
   historyList.clear()
@@ -391,7 +468,7 @@ let filtertags = []
 $('.ui-use-tags').select2({
   placeholder: $('.ui-use-tags').attr('placeholder'),
   multiple: true,
-  data () {
+  data() {
     return {
       results: filtertags
     }
@@ -400,7 +477,7 @@ $('.ui-use-tags').select2({
 $('.select2-input').css('width', 'inherit')
 buildTagsFilter([])
 
-function buildTagsFilter (tags) {
+function buildTagsFilter(tags) {
   for (let i = 0; i < tags.length; i++) {
     tags[i] = {
       id: i,
