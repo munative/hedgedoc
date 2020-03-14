@@ -21,7 +21,7 @@ You have to replace _\<NOTE\>_ with either the alias or id of a note you want to
 | `/<NOTE>/revision/<REVISION-ID>` | `GET` | **Returns the revision of the note with some metadata.**<br>The revision is returned as a JSON object with the content of the note and the authorship. |
 | `/<NOTE>/gist` | `GET` | **Creates a new GitHub Gist with the note's content.**<br>If [GitHub integration](../configuration-env-vars.md#github-login) is configured, the user will be redirected to GitHub and a new Gist with the content of the note will be created. |
 
-## User / History
+## User / History / Workspace
 These endpoints return information about the current logged-in user and it's note history. If no user is logged-in, the most of this requests will fail with either a HTTP 403 or a JSON object containing `{"status":"forbidden"}`.
 
 | Endpoint | HTTP-Method | Description |
@@ -33,6 +33,7 @@ These endpoints return information about the current logged-in user and it's not
 | `/history` | `DELETE` | **Deletes the user's history.** |
 | `/history/<NOTE>` | `POST` | **Toggles the pinned status in the history for a note.**<br>The body must be form-encoded and contain a field `pinned` that is either `true` or `false`.
 | `/history/<NOTE>` | `DELETE` | **Deletes a note from the user's history.** |
+| `/workspace` | `GET` | **Get list for workspace notes.** |
 
 
 ## CodiMD-server
