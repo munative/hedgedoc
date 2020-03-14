@@ -75,7 +75,7 @@ function pageInit () {
       else $('.ui-avatar').prop('src', '').hide()
       $('.ui-name').html(data.name)
       $('.ui-signout').show()
-      $('.ui-history').click()
+      $('.ui-workspace').click()
       parseServerToHistory(historyList, parseHistoryCallback)
     },
     () => {
@@ -111,6 +111,13 @@ $('.ui-history').click(() => {
   if (!$('#history').is(':visible')) {
     $('.section:visible').hide()
     $('#history').fadeIn()
+  }
+})
+
+$('.ui-workspace').click(() => {
+  if (!$('#workspace').is(':visible')) {
+    $('.section:visible').hide()
+    $('#workspace').fadeIn()
   }
 })
 
