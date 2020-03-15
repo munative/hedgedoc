@@ -66,7 +66,7 @@ const historyListOptions = {
 const historyList = new List('history', historyListOptions)
 
 const workspaceNotesListOptions = {
-  valueNames: ['id', 'title', 'shortid', 'permission', 'updatedAt', 'updatedAtTimestamp', 'ownerId', 'tags'],
+  valueNames: ['id', 'title', 'shortid', 'permission', 'updatedAt', 'timestamp', 'ownerId', 'tags'],
   item: `<li class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
           <span class="id" style="display:none;"></span>
           <a href="#">
@@ -76,6 +76,7 @@ const workspaceNotesListOptions = {
               <div class="content">
                 <h4 class="title"></h4>
                 <p>
+                  <i class="timestamp" style="display:none;"></i>
                   <i class="updatedAt"></i>
                 </p>
                 <p class="tags"></p>
