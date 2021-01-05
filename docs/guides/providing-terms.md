@@ -1,14 +1,14 @@
-Setup your terms of use
-===
+# How to set up your terms of use
+
+## Setup your terms of use
 
 To setup your terms of use, you need to provide a document called `terms-of-use.md` which contains them. Of course written in Markdown.
 
-It has to be provided under `./public/docs/` and will be automatically turned into a CodiMD document. It will also automatically updated as soon as you change the document on disk.
+It has to be provided under `./public/docs/` and will be automatically turned into a HedgeDoc document. It will also automatically updated as soon as you change the document on disk.
 
 As soon as the file exists a link will show up in the bottom part along with the release notes and link to them.
 
-Setup your privacy policy
-===
+## Setup your privacy policy
 
 To add a privacy policy you can use the same technique as for the terms of use. The main difference is that the document is called `privacy.md`.
 
@@ -16,11 +16,10 @@ See our example file `./public/docs/privacy.md.example` container some useful hi
 
 As with the terms of use, a link to the privacy notices will show up in the area where the release notes are provided on the index page.
 
-Setup your imprint
-===
+## Setup your imprint
 
 To add an imprint you can use the same technique as for the terms of use. The main difference is that the document is called `imprint.md`.
 
-It has to be provided under `./public/docs/` and will be automatically turned into a CodiMD document. It will also automatically updated as soon as you change the document on disk.
+It has to be provided under `./public/docs/` and will be automatically turned into a HedgeDoc document. It will also automatically updated as soon as you change the document on disk.
 
 As with the terms of use, a link to the imprint will show up in the area where the release notes are provided on the index page.

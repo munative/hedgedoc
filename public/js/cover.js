@@ -403,7 +403,7 @@ $('.ui-save-history').click(() => {
     const blob = new Blob([history], {
       type: 'application/json;charset=utf-8'
     })
-    saveAs(blob, `codimd_history_${moment().format('YYYYMMDDHHmmss')}`, true)
+    saveAs(blob, `hedgedoc_history_${moment().format('YYYYMMDDHHmmss')}`, true)
   })
 })
 

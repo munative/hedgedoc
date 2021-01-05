@@ -1,6 +1,5 @@
 {
     "Collaborative markdown notes": "Collaborative markdown notes",
-    "Realtime collaborative markdown notes on all platforms.": "Collaborate on markdown notes on all platforms in realtime.",
     "Best way to write and share your knowledge in markdown.": "The best platform to write and share markdown.",
     "Intro": "Intro",
     "History": "History",
@@ -119,5 +118,13 @@
     "Help us translating": "Help us translating",
     "Join the community": "Join the community",
     "Imprint": "Imprint",
+    "Freely - Anyone can edit": "Freely - Anyone can edit",
+    "Editable - Signed-in people can edit": "Editable - Signed-in people can edit",
+    "Limited - Signed-in people can edit (forbid guests)": "Limited - Signed-in people can edit (forbid guests)",
+    "Locked - Only owner can edit": "Locked - Only owner can edit",
+    "Protected - Only owner can edit (forbid guests)": "Protected - Only owner can edit (forbid guests)",
+    "Private - Only owner can view & edit": "Private - Only owner can view & edit",
+    "changed": "changed",
+    "created": "created",
     "Workspace": "Workspace"
 }

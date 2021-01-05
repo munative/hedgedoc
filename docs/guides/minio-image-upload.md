@@ -1,7 +1,6 @@
-Minio Guide for CodiMD
-===
+# Minio Guide for HedgeDoc
 
-**Note:** *This guide was written before the renaming. Just replace `HackMD` with `CodiMD` in your mind :smile: thanks!*
+*Note:* This guide was written before the renaming. Just replace `HackMD` with `HedgeDoc` in your mind :smile: thanks!
 
 1. First of all you need to setup Minio itself.
 
@@ -24,11 +23,11 @@ Minio Guide for CodiMD
 
    ![docker logs](../images/minio-image-upload/docker-logs.png)
 
-3. Open http://localhost:9000 and login with the shown credentials.
+3. Open <http://localhost:9000> and login with the shown credentials.
 
    ![minio default view](../images/minio-image-upload/default-view.png)
 
-4. Create a bucket for CodiMD
+4. Create a bucket for HedgeDoc
 
    ![minio create bucket](../images/minio-image-upload/create-bucket.png)
 
@@ -40,7 +39,7 @@ Minio Guide for CodiMD
    ![minio policy adding](../images/minio-image-upload/create-policy.png)
    *Add policy for uploads*
 
-6. Set credentials and configs for Minio in CodiMD's `config.json`
+6. Set credentials and configs for Minio in HedgeDoc's `config.json`
 
    ```JSON
    "minio": {
@@ -58,7 +57,7 @@ Minio Guide for CodiMD
 7. Set bucket name
 
    ```JSON
-   "s3bucket": "codimd"
+   "s3bucket": "hedgedoc"
    ```
 
 8. Set upload type.
@@ -79,7 +78,17 @@ Minio Guide for CodiMD
        "port": 9000,
        "secure": false
      },
-     "s3bucket": "codimd",
+     "s3bucket": "hedgedoc",
      "imageuploadtype": "minio"
    }
    ```
+
+10. If you were using filesystem before
+
+and you want to migrate assets to minio.
+
+You could use a convenience script located in `bin/migrate_from_fs_to_minio`.
+
+Be careful, read carefully what it does, it was not tested in all environments.
+
+Take it as an inspiration to make your own migration script.

@@ -27,6 +27,7 @@ require('prismjs/components/prism-makefile')
 require('prismjs/components/prism-gherkin')
 
 require('./lib/common/login')
+require('./locale')
 require('../vendor/md-toc')
 var Viz = require('viz.js')
 const ui = getUIElements()
@@ -35,7 +36,8 @@ const ui = getUIElements()
 window.createtime = null
 window.lastchangetime = null
 window.lastchangeui = {
-  status: $('.ui-status-lastchange'),
+  statusChanged: $('.ui-status-lastchange.changed'),
+  statusCreated: $('.ui-status-lastchange.created'),
   time: $('.ui-lastchange'),
   user: $('.ui-lastchangeuser'),
   nouser: $('.ui-no-lastchangeuser')
@@ -47,9 +49,11 @@ export function updateLastChange () {
   if (!window.lastchangeui) return
   if (window.createtime) {
     if (window.createtime && !window.lastchangetime) {
-      window.lastchangeui.status.text('created')
+      window.lastchangeui.statusChanged.hide()
+      window.lastchangeui.statusCreated.show()
     } else {
-      window.lastchangeui.status.text('changed')
+      window.lastchangeui.statusChanged.show()
+      window.lastchangeui.statusCreated.hide()
     }
     const time = window.lastchangetime || window.createtime
     window.lastchangeui.time.html(moment(time).fromNow())
@@ -113,9 +117,9 @@ function getTitle (view) {
 export function renderTitle (view) {
   let title = getTitle(view)
   if (title) {
-    title += ' - CodiMD'
+    title += ' - HedgeDoc'
   } else {
-    title = 'CodiMD - Collaborative markdown notes'
+    title = 'HedgeDoc - Collaborative markdown notes'
   }
   return title
 }
@@ -174,16 +178,11 @@ function slugifyWithUTF8 (text) {
 }
 
 export function isValidURL (str) {
-  const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-        '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
-  if (!pattern.test(str)) {
+  try {
+    const url = new URL(str)
+    return ['http:', 'https:'].includes(url.protocol)
+  } catch (e) {
     return false
-  } else {
-    return true
   }
 }
 
@@ -387,7 +386,7 @@ export function finishView (view) {
 
       window.mermaid.mermaidAPI.parse($value.text())
       $ele.addClass('mermaid')
-      $ele.html($value.text())
+      $ele.text($value.text())
       window.mermaid.init(undefined, $ele)
     } catch (err) {
       var errormessage = err

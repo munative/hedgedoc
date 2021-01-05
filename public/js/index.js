@@ -941,10 +941,9 @@ ui.toolbar.download.rawhtml.click(function (e) {
   e.stopPropagation()
   exportToRawHTML(ui.area.markdown)
 })
-// pdf
-ui.toolbar.download.pdf.attr('download', '').attr('href', noteurl + '/pdf')
 // export to dropbox
-ui.toolbar.export.dropbox.click(function () {
+ui.toolbar.export.dropbox.click(function (event) {
+  event.preventDefault()
   var filename = renderFilename(ui.area.markdown) + '.md'
   var options = {
     files: [
@@ -996,7 +995,8 @@ ui.toolbar.export.snippet.click(function () {
     })
 })
 // import from dropbox
-ui.toolbar.import.dropbox.click(function () {
+ui.toolbar.import.dropbox.click(function (event) {
+  event.preventDefault()
   var options = {
     success: function (files) {
       ui.spinner.show()
@@ -1596,7 +1596,8 @@ function toggleNightMode () {
     store.set('nightMode', !isActive)
   } else {
     Cookies.set('nightMode', !isActive, {
-      expires: 365
+      expires: 365,
+      sameSite: window.cookiePolicy
     })
   }
 }
