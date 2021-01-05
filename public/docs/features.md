@@ -2,12 +2,12 @@
 
 ## Introduction
 
-<i class="fa fa-file-text"></i> **CodiMD** is a real-time, multi-platform collaborative markdown note editor.
+**HedgeDoc** is a real-time, multi-platform collaborative markdown note editor.
 This means that you can write notes with other people on your **desktop**, **tablet** or even on the **phone**.
-You can sign-in via multiple auth providers like **Facebook**, **Twitter**, **GitHub** and many more on the [_homepage_](/).
+You can sign-in via multiple auth providers like **Facebook**, **Twitter**, **GitHub** and many more on the [*homepage*](/).
 
-If you experience any _issues_, feel free to report it on [**GitHub**](https://github.com/codimd/server/issues).
-Or meet us on [**Matrix.org**](https://riot.im/app/#/room/#codimd:matrix.org) for dev-talk and interactive help.
+If you experience any *issues*, feel free to report it on [**GitHub**](https://github.com/hedgedoc/hedgedoc/issues).
+Or meet us on [**Matrix**](https://chat.hedgedoc.org) for dev-talk and interactive help.
 **Thank you very much!**
 
 ## Workspace
@@ -27,7 +27,7 @@ Or meet us on [**Matrix.org**](https://riot.im/app/#/room/#codimd:matrix.org) fo
 
 ### Night Mode
 
-When you are tired of a white screen and like a night mode, click on the little moon <i class="fa fa-moon-o"></i> and turn on the night view of CodiMD.
+When you are tired of a white screen and like a night mode, click on the little moon <i class="fa fa-moon-o"></i> and turn on the night view of HedgeDoc.
 
 The editor view, which is in night mode by default, can also be toggled between night and day view using the the little sun<i class="fa fa-sun-o fa-fw"></i>.
 
@@ -35,7 +35,7 @@ The editor view, which is in night mode by default, can also be toggled between 
 
 You can upload an image simply by clicking on the upload button <i class="fa fa-upload"></i>.
 Alternatively, you can **drag-n-drop** an image into the editor. Even **pasting** images is possible!
-This will automatically upload the image to **[imgur](http://imgur.com)**, **[Amazon S3](https://aws.amazon.com/s3/)**, **[Minio](https://minio.io)** or the **local filesystem** (depending on the instance's configuration), nothing to worry about. :tada:
+This will automatically upload the image to **[imgur](https://imgur.com)**, **[Amazon S3](https://aws.amazon.com/s3/)**, **[Minio](https://minio.io)** or the **local filesystem** (depending on the instance's configuration), nothing to worry about. :tada:
 
 ![imgur](https://i.imgur.com/9cgQVqD.png)
 
@@ -50,21 +50,21 @@ Currently, you can save to **Dropbox** <i class="fa fa-dropbox"></i> (depending 
 
 ### Import Notes
 
-Similarly to the _save_ feature, you can also import a Markdown file from **Dropbox** <i class="fa fa-dropbox"></i> (depending on the instance's configuration), or import content from your **clipboard** <i class="fa fa-clipboard"></i>, which can parse some HTML. :smiley:
+Similarly to the *save* feature, you can also import a Markdown file from **Dropbox** <i class="fa fa-dropbox"></i> (depending on the instance's configuration), or import content from your **clipboard** <i class="fa fa-clipboard"></i>, which can parse some HTML. :smiley:
 
 ### Permissions
 
 It is possible to change the access permission of a note through the little button on the top right of the view.
 There are four possible options:
 
-|                              |Owner read/write|Signed-in read|Signed-in write|Guest read|Guest write|
-|:-----------------------------|:--------------:|:------------:|:-------------:|:--------:|:---------:|
-|<span class="text-nowrap"><i class="fa fa-leaf fa-fw"></i> **Freely**</span>|✔|✔|✔|✔|✔|
-|<span class="text-nowrap"><i class="fa fa-pencil fa-fw"></i> **Editable**</span>|✔|✔|✔|✔|✖|
-|<span class="text-nowrap"><i class="fa fa-id-card fa-fw"></i> **Limited**</span>|✔|✔|✔|✖|✖|
-|<span class="text-nowrap"><i class="fa fa-lock fa-fw"></i> **Locked**</span>|✔|✔|✖|✔|✖|
-|<span class="text-nowrap"><i class="fa fa-umbrella fa-fw"></i> **Protected**</span>|✔|✔|✖|✖|✖|
-|<span class="text-nowrap"><i class="fa fa-hand-stop-o fa-fw"></i> **Private**</span>|✔|✖|✖|✖|✖|
+|                                                                                      | Owner read/write | Signed-in read | Signed-in write | Guest read | Guest write |
+|:------------------------------------------------------------------------------------ |:----------------:|:--------------:|:---------------:|:----------:|:-----------:|
+| <span class="text-nowrap"><i class="fa fa-leaf fa-fw"></i> **Freely**</span>         |        ✔         |       ✔        |        ✔        |     ✔      |      ✔      |
+| <span class="text-nowrap"><i class="fa fa-pencil fa-fw"></i> **Editable**</span>     |        ✔         |       ✔        |        ✔        |     ✔      |      ✖      |
+| <span class="text-nowrap"><i class="fa fa-id-card fa-fw"></i> **Limited**</span>     |        ✔         |       ✔        |        ✔        |     ✖      |      ✖      |
+| <span class="text-nowrap"><i class="fa fa-lock fa-fw"></i> **Locked**</span>         |        ✔         |       ✔        |        ✖        |     ✔      |      ✖      |
+| <span class="text-nowrap"><i class="fa fa-umbrella fa-fw"></i> **Protected**</span>  |        ✔         |       ✔        |        ✖        |     ✖      |      ✖      |
+| <span class="text-nowrap"><i class="fa fa-hand-stop-o fa-fw"></i> **Private**</span> |        ✔         |       ✖        |        ✖        |     ✖      |      ✖      |
 
 **Only the owner of the note can change the note's permissions.**
 
@@ -73,7 +73,7 @@ There are four possible options:
 Notes can be embedded as follows:
 
 ```xml
-<iframe width="100%" height="500" src="https://demo.codimd.io/features" frameborder="0"></iframe>
+<iframe width="100%" height="500" src="https://demo.hedgedoc.org/features" frameborder="0"></iframe>
 ```
 
 ### [Slide Mode](./slide-example)
@@ -88,8 +88,8 @@ To switch the editor into slide mode, set the [document type](./yaml-metadata#ty
 
 ### Autogenerated Table of Contents
 
-You can look at the bottom right section of the view area, there is a _ToC_ button <i class="fa fa-bars"></i>.
-Pressing that button will show you a current _Table of Contents_, and will highlight which section you're at.
+You can look at the bottom right section of the view area, there is a *ToC* button <i class="fa fa-bars"></i>.
+Pressing that button will show you a current *Table of Contents*, and will highlight which section you're at.
 ToCs support up to **three header levels**.
 
 ### Permalink
@@ -127,7 +127,7 @@ The first **level 1 heading** (e.g. `# Title`) will be used as the note title.
 
 Using tags as follows, the specified tags will show in your **history**.
 
-###### tags: `features` `cool` `updated`
+#### tags: `features` `cool` `updated`
 
 ### [YAML Metadata](./yaml-metadata)
 
@@ -151,7 +151,7 @@ Use the syntax `[TOC]` to embed a table of contents into your note.
 
 You can type any emoji like this :smile: :smiley: :cry: :wink:
 
-> See full emoji list [here](http://www.emoji-cheat-sheet.com/).
+> See full emoji list [here](https://www.webfx.com/tools/emoji-cheat-sheet/).
 
 ### ToDo List
 
@@ -246,11 +246,12 @@ When you’re a carpenter making a beautiful chest of drawers, you’re not goin
 #### PDF
 
 **Caution: this might be blocked by your browser if not using an `https` URL.**
-{%pdf https://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf %}
+Note that not all servers allow embedding their content. See [our FAQ](https://hedgedoc.org/faq/#why-cant-i-embed-some-pdfs) for details.
+{%pdf https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf %}
 
 ### MathJax
 
-You can render *LaTeX* mathematical expressions using **MathJax**, as on [math.stackexchange.com](http://math.stackexchange.com/):
+You can render *LaTeX* mathematical expressions using **MathJax**, as on [math.stackexchange.com](https://math.stackexchange.com/):
 
 The *Gamma function* satisfying $\Gamma(n) = (n-1)!\quad\forall n\in\mathbb N$ is via the Euler integral
 
@@ -262,7 +263,7 @@ $$
 \Gamma(z) = \int_0^\infty t^{z-1}e^{-t}dt\,.
 $$
 
-> More information about **LaTeX** mathematical expressions [here](http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference).
+> More information about **LaTeX** mathematical expressions [here](https://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference).
 
 ### Diagrams
 
@@ -278,7 +279,7 @@ Note left of Alice: Alice responds
 Alice->Bob: Where have you been?
 ```
 
-More information about **sequence diagrams** syntax [here](http://bramp.github.io/js-sequence-diagrams/).
+More information about **sequence diagrams** syntax [here](https://bramp.github.io/js-sequence-diagrams/).
 
 #### Flow Charts
 
@@ -296,7 +297,7 @@ cond(yes)->e
 cond(no)->op2
 ```
 
-More information about **flow charts** syntax [here](http://adrai.github.io/flowchart.js/).
+More information about **flow charts** syntax [here](https://flowchart.js.org/).
 
 #### Graphviz
 
@@ -314,7 +315,7 @@ digraph hierarchy {
 }
 ```
 
-More information about **graphviz** syntax [here](http://www.tonyballantyne.com/graphs.html)
+More information about **graphviz** syntax [here](https://www.tonyballantyne.com/graphs.html)
 
 #### Mermaid
 
@@ -331,7 +332,7 @@ gantt
   Another task: 24d
 ```
 
-More information about **mermaid** syntax [here](http://knsv.github.io/mermaid)
+More information about **mermaid** syntax [here](https://mermaid-js.github.io/mermaid/)
 
 #### Abc Music Notation
 
@@ -347,7 +348,7 @@ GABc dedB|dedB dedB|c2ec B2dB|A2F2 G4:|
 g2gf g2Bd|g2f2 e2d2|c2ec B2dB|A2F2 G4:|
 ```
 
-More information about **abc** syntax [here](http://abcnotation.com/learn)
+More information about **abc** syntax [here](https://abcnotation.com/learn)
 
 ### Alert Area
 
@@ -390,15 +391,15 @@ ___
 
 #### Typographic Replacements
 
-Enable typographer option to see result.
-
 (c) (C) (r) (R) (tm) (TM) (p) (P) +-
 
-test.. test... test..... test?..... test!....
+test.. test... test.... test..... test?..... test!....
 
 !!!!!! ???? ,,
 
-Remarkable -- awesome
+Remarkable---no, awesome!
+
+During 1980--1988.
 
 "Smartypants, double quotes"
 
@@ -492,41 +493,41 @@ console.log(foo(5));
 
 #### Tables
 
-| Option | Description |
-| ------ | ----------- |
+| Option | Description                                                               |
+| ------ | ------------------------------------------------------------------------- |
 | data   | path to data files to supply the data that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. |
-| ext    | extension to be used for dest files. |
+| engine | engine to be used for processing templates. Handlebars is the default.    |
+| ext    | extension to be used for dest files.                                      |
 
 Right aligned columns
 
-| Option | Description |
-| ------:| -----------:|
-| data   | path to data files to supply the data that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. |
-| ext    | extension to be used for dest files. |
+| Option |                                                               Description |
+| ------:| -------------------------------------------------------------------------:|
+|   data | path to data files to supply the data that will be passed into templates. |
+| engine |    engine to be used for processing templates. Handlebars is the default. |
+|    ext |                                      extension to be used for dest files. |
 
 Left aligned columns
 
-| Option | Description |
-|:------ |:----------- |
+| Option | Description                                                               |
+|:------ |:------------------------------------------------------------------------- |
 | data   | path to data files to supply the data that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. |
-| ext    | extension to be used for dest files. |
+| engine | engine to be used for processing templates. Handlebars is the default.    |
+| ext    | extension to be used for dest files.                                      |
 
 Center aligned columns
 
-| Option | Description |
-|:------:|:-----------:|
-| data   | path to data files to supply the data that will be passed into templates. |
-| engine | engine to be used for processing templates. Handlebars is the default. |
-| ext    | extension to be used for dest files. |
+| Option |                                Description                                |
+|:------:|:-------------------------------------------------------------------------:|
+|  data  | path to data files to supply the data that will be passed into templates. |
+| engine |  engine to be used for processing templates. Handlebars is the default.   |
+|  ext   |                   extension to be used for dest files.                    |
 
 #### Links
 
-[link text](https://demo.codimd.org)
+[link text](https://demo.hedgedoc.org)
 [link with title](https://nodeca.github.io/pica/demo/ "title text!")
-Autoconverted link https://github.com/nodeca/pica
+Autoconverted link <https://github.com/nodeca/pica>
 
 #### Images
 
@@ -569,7 +570,7 @@ Term 2 with *inline markup*
 
     Third paragraph of definition 2.
 
-_Compact style:_
+*Compact style:*
 
 Term 1
   ~ Definition 1
@@ -584,3 +585,11 @@ This is an HTML abbreviation example.
 It converts "HTML", but keeps intact partial entries like "xxxHTMLyyy" and so on.
 
 *[HTML]: Hyper Text Markup Language
+
+## Revisions
+
+When changes are made to a note previous versions of the note are stored as `Revisions`, if you ever need to return to a previous save you can find all the note revisions by going to `Menu` -> `Revision`.
+
+The note history on the left displays each revision with a timestamp allowing you to quickly select a revision for the desired date and time. Selecting a revision on the left will display the revised note to the right, the revision will display the changes made with colorization to indicate additions/removals.
+
+In addition to browsing the revisions, you can download a selected note revision or revert the current note to the selected revision.

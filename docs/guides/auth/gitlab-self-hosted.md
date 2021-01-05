@@ -1,7 +1,6 @@
-GitLab (self-hosted)
-===
+# GitLab (self-hosted)
 
-**Note:** *This guide was written before the renaming. Just replace `HackMD` with `CodiMD` in your mind :smile: thanks!*
+*Note:* This guide was written before the renaming. Just replace `HackMD` with `HedgeDoc` in your mind :smile: thanks!
 
 1. Sign in to your GitLab
 2. Navigate to the application management page at `https://your.gitlab.domain/admin/applications` (admin permissions required)
@@ -14,11 +13,10 @@ GitLab (self-hosted)
 
 ![Application: HackMD](../../images/auth/gitlab-application-details.png)
 
-
 6. In the `docker-compose.yml` add the following environment variables to `app:` `environment:`
 
-```
-- CMD_DOMAIN=your.codimd.domain
+```Dockerfile
+- CMD_DOMAIN=your.hedgedoc.domain
 - CMD_URL_ADDPORT=true
 - CMD_PROTOCOL_USESSL=true
 - CMD_GITLAB_BASEURL=https://your.gitlab.domain
@@ -27,6 +25,6 @@ GitLab (self-hosted)
 ```
 
 7. Run `docker-compose up -d` to apply your settings.
-8. Sign in to your CodiMD using your GitLab ID:
+8. Sign in to your HedgeDoc using your GitLab ID:
 
 ![Sign in via GitLab](../../images/auth/gitlab-sign-in.png)

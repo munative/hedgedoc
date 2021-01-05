@@ -51,13 +51,20 @@ if (config.useSSL) {
   server = require('http').createServer(app)
 }
 
+// if we manage to provide HTTPS domains, but don't provide TLS ourselves
+// obviously a proxy is involded. In order to make sure express is aware of
+// this, we provide the option to trust proxies here.
+if (!config.useSSL && config.protocolUseSSL) {
+  app.set('trust proxy', 1)
+}
+
 // logger
 app.use(morgan('combined', {
   'stream': logger.stream
 }))
 
 // socket io
-var io = require('socket.io')(server)
+var io = require('socket.io')(server, { cookie: false })
 io.engine.ws = new (require('ws').Server)({
   noServer: true,
   perMessageDeflate: false
@@ -84,7 +91,7 @@ app.use(compression())
 if (config.hsts.enable) {
   app.use(helmet.hsts({
     maxAge: config.hsts.maxAgeSeconds,
-    includeSubdomains: config.hsts.includeSubdomains,
+    includeSubDomains: config.hsts.includeSubdomains,
     preload: config.hsts.preload
   }))
 } else if (config.useSSL) {
@@ -113,7 +120,7 @@ if (config.csp.enable) {
 }
 
 i18n.configure({
-  locales: ['en', 'zh-CN', 'zh-TW', 'fr', 'de', 'ja', 'es', 'ca', 'el', 'pt', 'it', 'tr', 'ru', 'nl', 'hr', 'pl', 'uk', 'hi', 'sv', 'eo', 'da', 'ko', 'id', 'sr', 'vi', 'ar', 'cs', 'sk'],
+  locales: ['en', 'zh-CN', 'zh-TW', 'fr', 'de', 'ja', 'es', 'ca', 'el', 'pt', 'it', 'tr', 'ru', 'nl', 'hr', 'pl', 'uk', 'hi', 'sv', 'eo', 'da', 'ko', 'id', 'sr', 'vi', 'ar', 'cs', 'sk', 'ml'],
   cookie: 'locale',
   indent: '    ', // this is the style poeditor.com exports it, this creates less churn
   directory: path.join(__dirname, '/locales'),
@@ -139,7 +146,9 @@ app.use(session({
   saveUninitialized: true, // always create session to ensure the origin
   rolling: true, // reset maxAge on every response
   cookie: {
-    maxAge: config.sessionLife
+    maxAge: config.sessionLife,
+    sameSite: config.cookiePolicy, // be careful: setting a SameSite value of none without https breaks the editor
+    secure: config.useSSL || config.protocolUseSSL || false
   },
   store: sessionStore
 }))
@@ -167,7 +176,7 @@ app.use(passport.session())
 app.use(require('./lib/web/middleware/checkURIValid'))
 // redirect url without trailing slashes
 app.use(require('./lib/web/middleware/redirectWithoutTrailingSlashes'))
-app.use(require('./lib/web/middleware/codiMDVersion'))
+app.use(require('./lib/web/middleware/hedgeDocVersion'))
 
 // routes need sessions
 // template files
@@ -182,7 +191,6 @@ app.locals.serverURL = config.serverURL
 app.locals.sourceURL = config.sourceURL
 app.locals.allowAnonymous = config.allowAnonymous
 app.locals.allowAnonymousEdits = config.allowAnonymousEdits
-app.locals.allowPDFExport = config.allowPDFExport
 app.locals.authProviders = {
   facebook: config.isFacebookEnable,
   twitter: config.isTwitterEnable,
@@ -279,7 +287,7 @@ process.on('uncaughtException', function (err) {
 
 // install exit handler
 function handleTermSignals () {
-  logger.info('CodiMD has been killed by signal, try to exit gracefully...')
+  logger.info('HedgeDoc has been killed by signal, try to exit gracefully...')
   realtime.maintenance = true
   // disconnect all socket.io clients
   Object.keys(io.sockets.sockets).forEach(function (key) {
