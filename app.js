@@ -1,44 +1,48 @@
 'use strict'
 // app
 // external modules
-var express = require('express')
+const express = require('express')
 
-var ejs = require('ejs')
-var passport = require('passport')
-var methodOverride = require('method-override')
-var cookieParser = require('cookie-parser')
-var compression = require('compression')
-var session = require('express-session')
-var SequelizeStore = require('connect-session-sequelize')(session.Store)
-var fs = require('fs')
-var path = require('path')
+const ejs = require('ejs')
+const passport = require('passport')
+const methodOverride = require('method-override')
+const cookieParser = require('cookie-parser')
+const compression = require('compression')
+const session = require('express-session')
+const SequelizeStore = require('connect-session-sequelize')(session.Store)
+const fs = require('fs')
+const path = require('path')
 
-var morgan = require('morgan')
-var passportSocketIo = require('passport.socketio')
-var helmet = require('helmet')
-var i18n = require('i18n')
-var flash = require('connect-flash')
+const morgan = require('morgan')
+const passportSocketIo = require('passport.socketio')
+const helmet = require('helmet')
+const i18n = require('i18n')
+const flash = require('connect-flash')
+const apiMetrics = require('prometheus-api-metrics')
 
 // core
-var config = require('./lib/config')
-var logger = require('./lib/logger')
-var errors = require('./lib/errors')
-var models = require('./lib/models')
-var csp = require('./lib/csp')
+const config = require('./lib/config')
+const logger = require('./lib/logger')
+const errors = require('./lib/errors')
+const models = require('./lib/models')
+const csp = require('./lib/csp')
+const metrics = require('./lib/prometheus')
+
+const supportedLocalesList = Object.keys(require('./locales/_supported.json'))
 
 // server setup
-var app = express()
-var server = null
+const app = express()
+let server = null
 if (config.useSSL) {
-  var ca = (function () {
-    var i, len, results
-    results = []
+  const ca = (function () {
+    let i, len
+    const results = []
     for (i = 0, len = config.sslCAPath.length; i < len; i++) {
       results.push(fs.readFileSync(config.sslCAPath[i], 'utf8'))
     }
     return results
   })()
-  var options = {
+  const options = {
     key: fs.readFileSync(config.sslKeyPath, 'utf8'),
     cert: fs.readFileSync(config.sslCertPath, 'utf8'),
     ca: ca,
@@ -60,18 +64,22 @@ if (!config.useSSL && config.protocolUseSSL) {
 
 // logger
 app.use(morgan('combined', {
-  'stream': logger.stream
+  stream: logger.stream
 }))
 
+// Register prometheus metrics endpoint
+app.use(apiMetrics())
+metrics.setupCustomPrometheusMetrics()
+
 // socket io
-var io = require('socket.io')(server, { cookie: false })
+const io = require('socket.io')(server, { cookie: false })
 io.engine.ws = new (require('ws').Server)({
   noServer: true,
   perMessageDeflate: false
 })
 
 // others
-var realtime = require('./lib/realtime.js')
+const realtime = require('./lib/realtime.js')
 
 // assign socket io to realtime
 realtime.io = io
@@ -80,7 +88,7 @@ realtime.io = io
 app.use(methodOverride('_method'))
 
 // session store
-var sessionStore = new SequelizeStore({
+const sessionStore = new SequelizeStore({
   db: models.sequelize
 })
 
@@ -120,7 +128,7 @@ if (config.csp.enable) {
 }
 
 i18n.configure({
-  locales: ['en', 'zh-CN', 'zh-TW', 'fr', 'de', 'ja', 'es', 'ca', 'el', 'pt', 'it', 'tr', 'ru', 'nl', 'hr', 'pl', 'uk', 'hi', 'sv', 'eo', 'da', 'ko', 'id', 'sr', 'vi', 'ar', 'cs', 'sk', 'ml'],
+  locales: supportedLocalesList,
   cookie: 'locale',
   indent: '    ', // this is the style poeditor.com exports it, this creates less churn
   directory: path.join(__dirname, '/locales'),
@@ -154,7 +162,7 @@ app.use(session({
 }))
 
 // session resumption
-var tlsSessionStore = {}
+const tlsSessionStore = {}
 server.on('newSession', function (id, data, cb) {
   tlsSessionStore[id.toString('hex')] = data
   cb()
@@ -247,9 +255,9 @@ io.sockets.on('connection', realtime.connection)
 
 // listen
 function startListen () {
-  var address
-  var listenCallback = function () {
-    var schema = config.useSSL ? 'HTTPS' : 'HTTP'
+  let address
+  const listenCallback = function () {
+    const schema = config.useSSL ? 'HTTPS' : 'HTTP'
     logger.info('%s Server listening at %s', schema, address)
     realtime.maintenance = false
   }
@@ -265,16 +273,19 @@ function startListen () {
 }
 
 // sync db then start listen
-models.sequelize.sync().then(function () {
-  // check if realtime is ready
-  if (realtime.isReady()) {
-    models.Revision.checkAllNotesRevision(function (err, notes) {
-      if (err) throw new Error(err)
-      if (!notes || notes.length <= 0) return startListen()
-    })
-  } else {
-    throw new Error('server still not ready after db synced')
-  }
+models.sequelize.authenticate().then(function () {
+  models.runMigrations().then(() => {
+    sessionStore.sync()
+    // check if realtime is ready
+    if (realtime.isReady()) {
+      models.Revision.checkAllNotesRevision(function (err, notes) {
+        if (err) throw new Error(err)
+        if (!notes || notes.length <= 0) return startListen()
+      })
+    } else {
+      throw new Error('server still not ready after db synced')
+    }
+  })
 })
 
 // log uncaught exception
@@ -291,7 +302,7 @@ function handleTermSignals () {
   realtime.maintenance = true
   // disconnect all socket.io clients
   Object.keys(io.sockets.sockets).forEach(function (key) {
-    var socket = io.sockets.sockets[key]
+    const socket = io.sockets.sockets[key]
     // notify client server going into maintenance status
     socket.emit('maintenance')
     setTimeout(function () {
@@ -299,9 +310,15 @@ function handleTermSignals () {
     }, 0)
   })
   if (config.path) {
-    fs.unlink(config.path)
+    fs.unlink(config.path, err => {
+      if (err) {
+        logger.error(`Could not cleanup socket: ${err.message}`)
+      } else {
+        logger.info('Successfully cleaned up socket')
+      }
+    })
   }
-  var checkCleanTimer = setInterval(function () {
+  const checkCleanTimer = setInterval(function () {
     if (realtime.isReady()) {
       models.Revision.checkAllNotesRevision(function (err, notes) {
         if (err) return logger.error(err)

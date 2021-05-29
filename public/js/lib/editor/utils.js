@@ -1,19 +1,20 @@
 const wrapSymbols = ['*', '_', '~', '^', '+', '=']
+
 export function wrapTextWith (editor, cm, symbol) {
   if (!cm.getSelection()) {
     return CodeMirror.Pass
   } else {
-    let ranges = cm.listSelections()
+    const ranges = cm.listSelections()
     for (let i = 0; i < ranges.length; i++) {
-      let range = ranges[i]
+      const range = ranges[i]
       if (!range.empty()) {
         const from = range.from()
         const to = range.to()
 
         if (symbol !== 'Backspace') {
-          let selection = cm.getRange(from, to)
-          let anchorIndex = editor.indexFromPos(ranges[i].anchor)
-          let headIndex = editor.indexFromPos(ranges[i].head)
+          const selection = cm.getRange(from, to)
+          const anchorIndex = editor.indexFromPos(ranges[i].anchor)
+          const headIndex = editor.indexFromPos(ranges[i].head)
           cm.replaceRange(symbol + selection + symbol, from, to, '+input')
           if (anchorIndex > headIndex) {
             ranges[i].anchor.ch += symbol.length
@@ -24,18 +25,18 @@ export function wrapTextWith (editor, cm, symbol) {
           }
           cm.setSelections(ranges)
         } else {
-          let preEndPos = {
+          const preEndPos = {
             line: to.line,
             ch: to.ch + symbol.length
           }
-          let preText = cm.getRange(to, preEndPos)
-          let preIndex = wrapSymbols.indexOf(preText)
-          let postEndPos = {
+          const preText = cm.getRange(to, preEndPos)
+          const preIndex = wrapSymbols.indexOf(preText)
+          const postEndPos = {
             line: from.line,
             ch: from.ch - symbol.length
           }
-          let postText = cm.getRange(postEndPos, from)
-          let postIndex = wrapSymbols.indexOf(postText)
+          const postText = cm.getRange(postEndPos, from)
+          const postIndex = wrapSymbols.indexOf(postText)
           // check if surround symbol are list in array and matched
           if (preIndex > -1 && postIndex > -1 && preIndex === postIndex) {
             cm.replaceRange('', to, preEndPos, '+delete')
@@ -48,25 +49,25 @@ export function wrapTextWith (editor, cm, symbol) {
 }
 
 export function insertText (cm, text, cursorEnd = 0) {
-  let cursor = cm.getCursor()
+  const cursor = cm.getCursor()
   cm.replaceSelection(text, cursor, cursor)
   cm.focus()
   cm.setCursor({ line: cursor.line, ch: cursor.ch + cursorEnd })
 }
 
 export function insertLink (cm, isImage) {
-  let cursor = cm.getCursor()
-  let ranges = cm.listSelections()
+  const cursor = cm.getCursor()
+  const ranges = cm.listSelections()
   const linkEnd = '](https://)'
   const symbol = (isImage) ? '![' : '['
 
   for (let i = 0; i < ranges.length; i++) {
-    let range = ranges[i]
+    const range = ranges[i]
     if (!range.empty()) {
       const from = range.from()
       const to = range.to()
-      let anchorIndex = editor.indexFromPos(ranges[i].anchor)
-      let headIndex = editor.indexFromPos(ranges[i].head)
+      const anchorIndex = editor.indexFromPos(ranges[i].anchor)
+      const headIndex = editor.indexFromPos(ranges[i].head)
       let selection = cm.getRange(from, to)
       selection = symbol + selection + linkEnd
       cm.replaceRange(selection, from, to)
@@ -87,9 +88,9 @@ export function insertLink (cm, isImage) {
 }
 
 export function insertHeader (cm) {
-  let cursor = cm.getCursor()
-  let startOfLine = { line: cursor.line, ch: 0 }
-  let startOfLineText = cm.getRange(startOfLine, { line: cursor.line, ch: 1 })
+  const cursor = cm.getCursor()
+  const startOfLine = { line: cursor.line, ch: 0 }
+  const startOfLineText = cm.getRange(startOfLine, { line: cursor.line, ch: 1 })
   // See if it is already a header
   if (startOfLineText === '#') {
     cm.replaceRange('#', startOfLine, startOfLine)
@@ -100,18 +101,20 @@ export function insertHeader (cm) {
 }
 
 export function insertOnStartOfLines (cm, symbol) {
-  let cursor = cm.getCursor()
-  let ranges = cm.listSelections()
+  const cursor = cm.getCursor()
+  const ranges = cm.listSelections()
 
   for (let i = 0; i < ranges.length; i++) {
-    let range = ranges[i]
+    const range = ranges[i]
     if (!range.empty()) {
-      const from = range.from()
-      const to = range.to()
-      let selection = cm.getRange({ line: from.line, ch: 0 }, to)
+      const cursorFrom = range.from()
+      const cursorTo = range.to()
+      const firstLineStart = { line: cursorFrom.line, ch: 0 }
+      const lastLineEnd = { line: cursorTo.line, ch: cm.getLine(cursorTo.line).length }
+      let selection = cm.getRange(firstLineStart, lastLineEnd)
       selection = selection.replace(/\n/g, '\n' + symbol)
       selection = symbol + selection
-      cm.replaceRange(selection, from, to)
+      cm.replaceRange(selection, firstLineStart, lastLineEnd)
     } else {
       cm.replaceRange(symbol, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: 0 })
     }
