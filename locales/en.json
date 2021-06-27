@@ -128,5 +128,7 @@
     "changed": "changed",
     "created": "created",
     "Workspace": "Workspace",
-    "No workspace notes": "No workspace notes"
+    "No workspace notes": "No workspace notes",
+    "Sort by tag": "Sort by tag",
+    "Tag": "Tag"
 }
