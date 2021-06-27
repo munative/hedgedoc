@@ -127,5 +127,6 @@
     "Private - Only owner can view & edit": "Private - Only owner can view & edit",
     "changed": "changed",
     "created": "created",
-    "Workspace": "Workspace"
+    "Workspace": "Workspace",
+    "No workspace notes": "No workspace notes"
 }

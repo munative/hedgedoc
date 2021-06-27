@@ -2142,12 +2142,30 @@ function updatePermission (newPermission) {
       break
   }
   if (
-    personalInfo.userid &&
+    ['freely', 'editable', 'limited'].includes(permission) ||
+    (personalInfo.userid &&
     window.owner &&
-    personalInfo.userid === window.owner
+    personalInfo.userid === window.owner)
   ) {
     label += ' <i class="fa fa-caret-down"></i>'
     ui.infobar.permission.label.removeClass('disabled')
+    if (personalInfo.userid &&
+      window.owner &&
+      personalInfo.userid === window.owner) {
+      ui.infobar.permission.freely.removeClass('disabled')
+      ui.infobar.permission.editable.removeClass('disabled')
+      ui.infobar.permission.limited.removeClass('disabled')
+      ui.infobar.permission.locked.removeClass('disabled')
+      ui.infobar.permission.protected.removeClass('disabled')
+      ui.infobar.permission.private.removeClass('disabled')
+    } else {
+      ui.infobar.permission.freely.addClass('disabled')
+      ui.infobar.permission.editable.addClass('disabled')
+      ui.infobar.permission.limited.addClass('disabled')
+      ui.infobar.permission.locked.addClass('disabled')
+      ui.infobar.permission.protected.addClass('disabled')
+      ui.infobar.permission.private.addClass('disabled')
+    }
   } else {
     ui.infobar.permission.label.addClass('disabled')
   }

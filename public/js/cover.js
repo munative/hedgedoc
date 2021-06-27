@@ -96,7 +96,7 @@ setloginStateChangeEvent(pageInit)
 
 pageInit()
 
-function pageInit() {
+function pageInit () {
   checkIfAuth(
     data => {
       $('.ui-signin').hide()
@@ -108,9 +108,25 @@ function pageInit() {
       $('.ui-signout').show()
       $('.ui-workspace').click()
       parseServerToHistory(historyList, parseHistoryCallback)
-      
-      getWorkspaceNotes(workspaceNotesList, (list, workspaceNotes)=>{
+
+      getWorkspaceNotes(workspaceNotesList, (list, workspaceNotes) => {
         parseToWorkspaceNotes(list, workspaceNotes, getWorkspaceNotesCallback)
+        {
+          const filtertags = []
+          for (let i = 0, l = list.items.length; i < l; i++) {
+            const tags = list.items[i]._values.tags
+            if (tags && tags.length > 0) {
+              for (let j = 0; j < tags.length; j++) {
+                // push info filtertags if not found
+                let found = false
+                if (filtertags.includes(tags[j])) { found = true }
+                if (!found) { filtertags.push(tags[j]) }
+              }
+            }
+          }
+          buildWorkspaceTagsFilter(filtertags)
+        }
+        checkWorkspaceList()
       })
     },
     () => {
@@ -156,7 +172,7 @@ $('.ui-workspace').click(() => {
   }
 })
 
-function checkHistoryList() {
+function checkHistoryList () {
   if ($('#history-list').children().length > 0) {
     $('#pagination-history').show()
     $('.ui-nohistory').hide()
@@ -172,11 +188,21 @@ function checkHistoryList() {
   }
 }
 
-function parseHistoryCallback(list, notehistory) {
+function checkWorkspaceList () {
+  if ($('#workspaceNotes-list').children().length > 0) {
+    $('#pagination-workspace').show()
+    $('.ui-noworkspacenotes').hide()
+  } else if ($('#workspaceNotes-list').children().length === 0) {
+    $('#pagination-workspace').hide()
+    $('.ui-noworkspacenotes').slideDown()
+  }
+}
+
+function parseHistoryCallback (list, notehistory) {
   checkHistoryList()
   // sort by pinned then timestamp
   list.sort('', {
-    sortFunction(a, b) {
+    sortFunction (a, b) {
       const notea = a.values()
       const noteb = b.values()
       if (notea.pinned && !noteb.pinned) {
@@ -246,11 +272,11 @@ historyList.on('updated', e => {
   $('.ui-history-pin').on('click', historyPinClick)
 })
 
-function getWorkspaceNotesCallback(list, workspaceNotes) {
+function getWorkspaceNotesCallback (list, workspaceNotes) {
   list.clear()
   list.add(workspaceNotes)
   list.sort('', {
-    sortFunction(a, b) {
+    sortFunction (a, b) {
       const notea = a.values()
       const noteb = b.values()
       if (notea.updatedAt > noteb.updatedAt) {
@@ -289,7 +315,7 @@ workspaceNotesList.on('updated', e => {
   }
 })
 
-function historyCloseClick(e) {
+function historyCloseClick (e) {
   e.preventDefault()
   const id = $(this).closest('a').siblings('span').html()
   const value = historyList.get('id', id)[0]._values
@@ -299,7 +325,7 @@ function historyCloseClick(e) {
   deleteId = id
 }
 
-function historyPinClick(e) {
+function historyPinClick (e) {
   e.preventDefault()
   const $this = $(this)
   const id = $this.closest('a').siblings('span').html()
@@ -338,7 +364,7 @@ function historyPinClick(e) {
 // auto update item fromNow every minutes
 setInterval(updateItemFromNow, 60000)
 
-function updateItemFromNow() {
+function updateItemFromNow () {
   const items = $('.item').toArray()
   for (let i = 0; i < items.length; i++) {
     const item = $(items[i])
@@ -350,7 +376,7 @@ function updateItemFromNow() {
 let clearHistory = false
 let deleteId = null
 
-function deleteHistory() {
+function deleteHistory () {
   checkIfAuth(() => {
     deleteServerHistory(deleteId, (err, result) => {
       if (!err) {
@@ -469,7 +495,7 @@ let filtertags = []
 $('.ui-use-tags').select2({
   placeholder: $('.ui-use-tags').attr('placeholder'),
   multiple: true,
-  data() {
+  data () {
     return {
       results: filtertags
     }
@@ -478,7 +504,20 @@ $('.ui-use-tags').select2({
 $('.select2-input').css('width', 'inherit')
 buildTagsFilter([])
 
-function buildTagsFilter(tags) {
+let workspaceFiltertags = []
+$('.ui-use-tags.workspace-tags').select2({
+  placeholder: $('.ui-use-tags.workspace-tags').attr('placeholder'),
+  multiple: true,
+  data () {
+    return {
+      results: workspaceFiltertags
+    }
+  }
+})
+$('.select2-input.workspace-tags').css('width', 'inherit')
+buildWorkspaceTagsFilter([])
+
+function buildTagsFilter (tags) {
   for (let i = 0; i < tags.length; i++) {
     tags[i] = {
       id: i,
@@ -487,6 +526,17 @@ function buildTagsFilter(tags) {
   }
   filtertags = tags
 }
+
+function buildWorkspaceTagsFilter (tags) {
+  for (let i = 0; i < tags.length; i++) {
+    tags[i] = {
+      id: i,
+      text: S(tags[i]).unescapeHTML().s
+    }
+  }
+  workspaceFiltertags = tags
+}
+
 $('.ui-use-tags').on('change', function () {
   const tags = []
   const data = $(this).select2('data')
@@ -504,14 +554,29 @@ $('.ui-use-tags').on('change', function () {
       }
       return found
     })
+    workspaceNotesList.filter(item => {
+      const values = item.values()
+      if (!values.tags) return false
+      let found = false
+      for (let i = 0; i < tags.length; i++) {
+        if (values.tags.includes(tags[i])) {
+          found = true
+          break
+        }
+      }
+      return found
+    })
   } else {
     historyList.filter()
+    workspaceNotesList.filter()
   }
   checkHistoryList()
+  checkWorkspaceList()
 })
 
 $('.search').keyup(() => {
   checkHistoryList()
+  checkWorkspaceList()
 })
 
 // focus user field after opening login modal

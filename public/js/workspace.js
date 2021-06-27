@@ -6,14 +6,14 @@ import {
   encodeNoteId
 } from './utils'
 
-export function parseToWorkspaceNotes(list, workspaceNotes, callback) {
+export function parseToWorkspaceNotes (list, workspaceNotes, callback) {
   if (!callback) return
   else if (!list || !workspaceNotes) callback(list, workspaceNotes)
   else if (workspaceNotes && workspaceNotes.length > 0) {
     for (let i = 0; i < workspaceNotes.length; i++) {
       // migrate LZString encoded id to base64url encoded id
       try {
-        let id = LZString.decompressFromBase64(workspaceNotes[i].id)
+        const id = LZString.decompressFromBase64(workspaceNotes[i].id)
         if (id && checkNoteIdValid(id)) {
           workspaceNotes[i].id = encodeNoteId(id)
         }
@@ -33,7 +33,7 @@ export function parseToWorkspaceNotes(list, workspaceNotes, callback) {
   callback(list, workspaceNotes)
 }
 
-export function getWorkspaceNotes(list, callback) {
+export function getWorkspaceNotes (list, callback) {
   $.get(`${serverurl}/workspace`)
     .done(data => {
       if (data.notes) {
