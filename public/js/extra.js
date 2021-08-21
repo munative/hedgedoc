@@ -284,12 +284,12 @@ export function finishView (view) {
   // youtube
   view.find('div.youtube.raw').removeClass('raw')
     .click(function () {
-      imgPlayiframe(this, '//www.youtube.com/embed/')
+      imgPlayiframe(this, 'https://www.youtube.com/embed/')
     })
     // vimeo
   view.find('div.vimeo.raw').removeClass('raw')
     .click(function () {
-      imgPlayiframe(this, '//player.vimeo.com/video/')
+      imgPlayiframe(this, 'https://player.vimeo.com/video/')
     })
     .each((key, value) => {
       const vimeoLink = `https://vimeo.com/${$(value).attr('data-videoid')}`
@@ -453,7 +453,7 @@ export function finishView (view) {
     .each((key, value) => {
       $.ajax({
         type: 'GET',
-        url: `//www.slideshare.net/api/oembed/2?url=http://www.slideshare.net/${$(value).attr('data-slideshareid')}&format=json`,
+        url: `https://www.slideshare.net/api/oembed/2?url=https://www.slideshare.net/${$(value).attr('data-slideshareid')}&format=json`,
         jsonp: 'callback',
         dataType: 'jsonp',
         success (data) {
@@ -575,6 +575,14 @@ export function postProcess (code) {
   // also add noopener to prevent clickjacking
   // See details: https://mathiasbynens.github.io/rel-noopener/
   result.find('a:not([href^="#"]):not([target])').attr('target', '_blank').attr('rel', 'noopener')
+
+  // If it's hashtag link then make it base uri independent
+  result.find('a[href^="#"]').each((index, linkTag) => {
+    const currentLocation = new URL(window.location)
+    currentLocation.hash = linkTag.hash
+    linkTag.href = currentLocation.toString()
+  })
+
   // update continue line numbers
   const linenumberdivs = result.find('.gutter.linenumber').toArray()
   for (let i = 0; i < linenumberdivs.length; i++) {
@@ -612,6 +620,18 @@ export function removeDOMEvents (view) {
 }
 window.removeDOMEvents = removeDOMEvents
 
+function toDataURL (url, callback) {
+  fetch(url).then(response => {
+    const fr = new FileReader()
+    fr.onload = function () {
+      callback(this.result)
+    }
+    response.blob().then(blob => {
+      fr.readAsDataURL(blob)
+    })
+  })
+}
+
 function generateCleanHTML (view) {
   const src = view.clone()
   const eles = src.find('*')
@@ -626,10 +646,9 @@ function generateCleanHTML (view) {
   src.find('input.task-list-item-checkbox').attr('disabled', '')
   // replace emoji image path
   src.find('img.emoji').each((key, value) => {
-    let name = $(value).attr('alt')
-    name = name.substr(1)
-    name = name.slice(0, name.length - 1)
-    $(value).attr('src', `https://cdnjs.cloudflare.com/ajax/libs/emojify.js/1.1.0/images/basic/${name}.png`)
+    toDataURL($(value).attr('src'), dataURL => {
+      $(value).attr('src', dataURL)
+    })
   })
   // replace video to iframe
   src.find('div[data-videoid]').each((key, value) => {
@@ -673,21 +692,18 @@ export function exportToHTML (view) {
   const tocAffix = $('#ui-toc-affix').clone()
   tocAffix.find('*').removeClass('active').find("a[href^='#'][smoothhashscroll]").removeAttr('smoothhashscroll')
   // generate html via template
-  $.get(`${serverurl}/build/html.min.css`, css => {
-    $.get(`${serverurl}/views/html.hbs`, template => {
-      let html = template.replace('{{{url}}}', serverurl)
-      html = html.replace('{{title}}', title)
-      html = html.replace('{{{css}}}', css)
-      html = html.replace('{{{html}}}', src[0].outerHTML)
-      html = html.replace('{{{ui-toc}}}', toc.html())
-      html = html.replace('{{{ui-toc-affix}}}', tocAffix.html())
-      html = html.replace('{{{lang}}}', (md && md.meta && md.meta.lang) ? `lang="${md.meta.lang}"` : '')
-      html = html.replace('{{{dir}}}', (md && md.meta && md.meta.dir) ? `dir="${md.meta.dir}"` : '')
-      const blob = new Blob([html], {
-        type: 'text/html;charset=utf-8'
-      })
-      saveAs(blob, filename, true)
+  $.get(`${serverurl}/build/htmlexport.html`, template => {
+    let html = template.replace('{{{url}}}', serverurl)
+    html = html.replace('{{title}}', title)
+    html = html.replace('{{{html}}}', src[0].outerHTML)
+    html = html.replace('{{{ui-toc}}}', toc.html())
+    html = html.replace('{{{ui-toc-affix}}}', tocAffix.html())
+    html = html.replace('{{{lang}}}', (md && md.meta && md.meta.lang) ? `lang="${md.meta.lang}"` : '')
+    html = html.replace('{{{dir}}}', (md && md.meta && md.meta.dir) ? `dir="${md.meta.dir}"` : '')
+    const blob = new Blob([html], {
+      type: 'text/html;charset=utf-8'
     })
+    saveAs(blob, filename, true)
   })
 }
 
@@ -1110,7 +1126,7 @@ const youtubePlugin = new Plugin(
     if (!videoid) return
     const div = $('<div class="youtube raw"></div>')
     div.attr('data-videoid', videoid)
-    const thumbnailSrc = `//img.youtube.com/vi/${videoid}/hqdefault.jpg`
+    const thumbnailSrc = `https://img.youtube.com/vi/${videoid}/hqdefault.jpg`
     const image = `<img src="${thumbnailSrc}" />`
     div.append(image)
     const icon = '<i class="icon fa fa-youtube-play fa-5x"></i>'

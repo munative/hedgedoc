@@ -5,7 +5,20 @@
   they were repeatedly used to exploit security vulnerabilities.  
   If you want to continue using Google Analytics or Disqus, you can re-enable them in the config.
   See [the docs](https://docs.hedgedoc.org/configuration/#web-security-aspects) for details.
-  
+
+### Features
+- HedgeDoc now automatically retries connecting to the database up to 30 times on startup.
+- This release introduces the `csp.allowFraming` config option, which controls whether embedding a HedgeDoc instance
+  in other webpages is allowed. We **strongly recommend disabling** this option to reduce the risk of XSS attacks.
+- This release introduces the `csp.allowPDFEmbed` config option, which controls whether embedding PDFs inside HedgeDoc
+  notes is allowed. We recommend disabling this option if you don't use the feature, to reduce the attack surface of
+  XSS attacks.
+
+### Bugfixes
+- Fix crash when trying to read the current Git commit on startup 
+- Fix endless loop on shutdown when HedgeDoc can't connect to the database
+- Ensure that all cookies are set with the `secure` flag, if HedgeDoc is loaded via HTTPS
+- Fix font display issues when having some variants of fonts used by HedgeDoc installed locally
 
 ## <i class="fa fa-tag"></i> 1.8.2 <i class="fa fa-calendar-o"></i> 2021-05-11
 

@@ -27,7 +27,6 @@ describe('Content security policies', function () {
         upgradeInsecureRequests: 'auto',
         reportURI: undefined
       },
-      useCDN: true,
       dropbox: {
         appKey: undefined
       }
@@ -42,21 +41,6 @@ describe('Content security policies', function () {
   after(function () {
     mock.stopAll()
     csp = mock.reRequire('../lib/csp')
-  })
-
-  // beginnging Tests
-  it('Disable CDN', function () {
-    const testconfig = defaultConfig
-    testconfig.useCDN = false
-    mock('../lib/config', testconfig)
-    csp = mock.reRequire('../lib/csp')
-
-    assert(!csp.computeDirectives().scriptSrc.includes('https://cdnjs.cloudflare.com'))
-    assert(!csp.computeDirectives().scriptSrc.includes('https://cdn.mathjax.org'))
-    assert(!csp.computeDirectives().styleSrc.includes('https://cdnjs.cloudflare.com'))
-    assert(!csp.computeDirectives().styleSrc.includes('https://fonts.googleapis.com'))
-    assert(!csp.computeDirectives().fontSrc.includes('https://cdnjs.cloudflare.com'))
-    assert(!csp.computeDirectives().fontSrc.includes('https://fonts.gstatic.com'))
   })
 
   it('Disable Google Analytics', function () {
@@ -144,7 +128,7 @@ describe('Content security policies', function () {
     const variations = ['default', 'script', 'img', 'style', 'font', 'object', 'media', 'child', 'connect']
 
     for (let i = 0; i < variations.length; i++) {
-      assert.strictEqual(csp.computeDirectives()[variations[i] + 'Src'].toString(), ['https://' + variations[i] + '.example.com'].concat(unextendedCSP[variations[i] + 'Src']).toString())
+      assert.strictEqual(csp.computeDirectives()[variations[i] + 'Src'].toString(), ['https://' + variations[i] + '.example.com'].concat(unextendedCSP[variations[i] + 'Src']).filter(x => x != null).toString())
     }
   })
 
