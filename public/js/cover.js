@@ -492,8 +492,8 @@ $('.ui-logout').click(() => {
 })
 
 let filtertags = []
-$('.ui-use-tags').select2({
-  placeholder: $('.ui-use-tags').attr('placeholder'),
+$('.ui-use-tags.history-tags').select2({
+  placeholder: $('.ui-use-tags.history-tags').attr('placeholder'),
   multiple: true,
   data () {
     return {
@@ -501,7 +501,6 @@ $('.ui-use-tags').select2({
     }
   }
 })
-$('.select2-input').css('width', 'inherit')
 buildTagsFilter([])
 
 let workspaceFiltertags = []
@@ -514,8 +513,9 @@ $('.ui-use-tags.workspace-tags').select2({
     }
   }
 })
-$('.select2-input.workspace-tags').css('width', 'inherit')
 buildWorkspaceTagsFilter([])
+
+$('.select2-input').css('width', 'inherit')
 
 function buildTagsFilter (tags) {
   for (let i = 0; i < tags.length; i++) {
