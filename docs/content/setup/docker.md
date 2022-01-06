@@ -28,7 +28,7 @@ services:
     restart: always
   app:
     # Make sure to use the latest release from https://hedgedoc.org/latest-release
-    image: quay.io/hedgedoc/hedgedoc:1.8.2
+    image: quay.io/hedgedoc/hedgedoc:1.9.2
     environment:
       - CMD_DB_URL=postgres://hedgedoc:password@database:5432/hedgedoc
       - CMD_DOMAIN=localhost
@@ -47,6 +47,17 @@ volumes:
 After executing `docker-compose up`, HedgeDoc should be available at [http://127.0.0.1:3000](http://127.0.0.1:3000).  
 You can now continue to configure your container with environment variables.
 Check out [the configuration docs](/configuration) for more details.
+
+## File Permissions
+
+By default, HedgeDoc will change the permissions of the uploads directory to
+`0700` on every start of the Docker container. This is OK if you keep the files
+in a named volume, but if you want to serve the files from a webserver on your
+host (e.g. an Nginx reverse proxy) the webserver may not have the permission to
+read the files.
+
+To fix this, you can set the `UPLOADS_MODE` env variable to something other
+than `0700`.
 
 ## Upgrading
 
