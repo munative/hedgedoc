@@ -1,5 +1,151 @@
 # Release Notes
 
+## UNRELEASED
+
+### Enhancements
+- Add a pointer to Mermaid 9.1.7 documentation, which is what HedgeDoc 1 supports.
+
+### Bugfixes
+- Fix a crash when having numeric-only values in opengraph frontmatter
+- Fix unnecessary session creation on healthcheck endpoint
+
+## <i class="fa fa-tag"></i> 1.9.9 <i class="fa fa-calendar-o"></i> 2023-07-30
+
+HedgeDoc has a new slogan! See [our announcement](https://community.hedgedoc.org/t/and-the-new-slogan-is/) for the details.
+
+This release fixes a security issue. We recommend upgrading as soon as possible.
+
+### Security Fixes
+- [CVE-2023-38487: API allows to hide existing notes](https://github.com/hedgedoc/hedgedoc/security/advisories/GHSA-7494-7hcf-vxpg)
+
+### Enhancements
+- Docker secrets can now be used to provide OAuth2 client secrets ([#4196](https://github.com/hedgedoc/hedgedoc/pull/4196) by [@DennisGaida](https://github.com/DennisGaida))
+- Document how to set up Azure Active Directory authentication ([#4413](https://github.com/hedgedoc/hedgedoc/pull/4413) by [@pramitsingh0](https://github.com/pramitsingh0))
+- Add YAML metadata to documentation page ([#4371](https://github.com/hedgedoc/hedgedoc/pull/4371) by [@JunedKhan101](https://github.com/JunedKhan101))
+
+### Bugfixes
+- Fix non-existing notes being created in some cases, instead of returning a 404 error
+
+### Contributors
+- Jordi Mallach (translator)
+- sujade (translator)
+
+## <i class="fa fa-tag"></i> 1.9.8 <i class="fa fa-calendar-o"></i> 2023-06-04
+
+**Please note:** This release dropped support for Node 14, which is end-of-life since May 2023.
+You now need at least Node 16 to run HedgeDoc. We recommend to use the latest LTS release of Node.js.
+
+This release switches to Yarn 3 for dependency management, as Yarn 1 has bugs preventing us from upgrading some dependencies.
+If you install HedgeDoc manually, run `bin/setup` again for instructions. Other installation methods should not require
+special actions.
+
+### Enhancements
+- Extend boolean environment variable parsing with other positive answers and case insensitivity
+- Allow setting of `documentMaxLength` via `CMD_DOCUMENT_MAX_LENGTH` environment variable (contributed by [@jmallach](https://github.com/jmallach))
+- Add dedicated healthcheck endpoint at /_health that is less resource intensive than /status
+- Compatibility with Node.js 18 and later
+- Add support for the arm64 architecture in the docker image
+- Add a config option to disable the `/status` and `/metrics` endpoints
+
+### Bugfixes
+- Fix that permission errors can break existing connections to a note, causing inconsistent note content and changes not being saved (contributed by [@julianrother](https://github.com/julianrother))
+- Fix speaker notes not showing up in the presentation view
+- Fix issues with upgrading some dependencies by upgrading to Yarn 3
+- Fix macOS compatibility of `bin/setup` script
+
+### Contributors
+- UwYFmLpoKtYn (translator)
+- Pub (translator)
+- SnowCode (translator)
+
+## <i class="fa fa-tag"></i> 1.9.7 <i class="fa fa-calendar-o"></i> 2023-02-19
+
+### Bugfixes
+- Fix note titles with special characters producing invalid file names in user export zip file
+- Fix night-mode toggle not working when page is loaded with night-mode enabled
+
+### Contributors
+- Francesco (translator)
+- Gabriel Santiago Macedo (translator)
+
+## <i class="fa fa-tag"></i> 1.9.6 <i class="fa fa-calendar-o"></i> 2022-11-06
+
+### Bugfixes
+- Fix migrations deleting all notes when SQLite is used
+
+## <i class="fa fa-tag"></i> 1.9.5 <i class="fa fa-calendar-o"></i> 2022-10-30
+
+### Enhancements
+- Add dark mode toggle in mobile view
+- Replace embedding shortcode regexes with more specific ones to safeguard against XSS attacks
+
+### Bugfixes
+- Fix a crash when using LDAP authentication with custom search attributes (thanks to [@aboettger-tuhh](https://github.com/aboettger-tuhh) for reporting)
+- Fix a crash caused by a long note history when the MySQL database is used
+- Fix `breaks` option not being respected in the publish-view
+- Fix missing syntax highlighting in the markdown editor
+
+### Contributors
+- Bateausurleau (translator)
+- Goncalo (translator)
+- Ívarr Vinter (translator)
+- Oein0219 (translator)
+- [Pol Dellaiera](https://github.com/drupol)
+
+## <i class="fa fa-tag"></i> 1.9.4 <i class="fa fa-calendar-o"></i> 2022-07-10
+
+**Please note:** This release dropped support for Node 12, which is end-of-life since April 2022.
+You now need at least Node 14.13.1 or Node 16 to run HedgeDoc. We don't support more recent versions of Node.
+
+### Enhancements
+- Remove unexpected shell call during migrations
+- More S3 config options: upload folder & public ACL (thanks to [@lautaroalvarez](https://github.com/lautaroalvarez))
+
+### Contributors
+- Al_x (translator)
+- Emmanuel Courreges (translator)
+- paranic (translator)
+- Quentin PAGÈS (translator)
+
+## <i class="fa fa-tag"></i> 1.9.3 <i class="fa fa-calendar-o"></i> 2022-04-10
+
+This release fixes a security issue. We recommend upgrading as soon as possible.
+
+⚠️ **Warning:** If you deploy HedgeDoc and MariaDB with docker-compose using a checkout of our
+[container repo](https://github.com/hedgedoc/container), you will need to manually convert the character set
+of the database to utf8mb4 when updating. See the [corresponding PR](https://github.com/hedgedoc/container/pull/287) for more information.
+
+### Security Fixes
+- Fix [Enumerable upload file names](https://github.com/hedgedoc/hedgedoc/security/advisories/GHSA-q6vv-2q26-j7rx)
+
+### Enhancements
+- Libravatar avatars render as ident-icons when no avatar image was uploaded to Libravatar or Gravatar
+- Add database connection error message to log output
+- Allow SAML authentication provider to be named
+- Suppress error message when `git` binary is not found
+
+### Bugfixes
+- Fix error that Libravatar user avatars were not shown when using OAuth2 login
+- Fix `bin/manage_users` not accepting numeric passwords (thanks to [@carr0t2](https://github.com/carr0t2) for reporting)
+- Fix visibility of modals for screen readers
+- Fix GitLab snippet export (thanks to [@semjongeist](https://github.com/semjongeist) for reporting)
+- Fix missing inline authorship colors (thanks to [@EBendinelli](https://github.com/EBendinelli) for reporting)
+
+### Contributors
+- ced (translator)
+- deluxghost (translator)
+- [Dennis Gaida](https://github.com/DennisGaida)
+- Michael Hauer (translator)
+- [Moritz Schlarb](https://github.com/moschlar)
+- Mostafa Ahangarha (translator)
+- [Sandro](https://github.com/SuperSandro2000)
+- Sergio Varela (translator)
+- Tạ Quang Khôi (translator)
+- Tiago Triques (translator)
+- tmpod (translator)
+- [Uchiha Kakashi](https://github.com/licy183)
+
+
 ## <i class="fa fa-tag"></i> 1.9.2 <i class="fa fa-calendar-o"></i> 2021-12-03
 
 ### Bugfixes

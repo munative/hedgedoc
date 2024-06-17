@@ -13,7 +13,7 @@
             <ul class="dropdown-menu list" role="menu" aria-labelledby="menu">
             </ul>
         </div>
-        <a class="navbar-brand pull-left header-brand" href="<%- serverURL %>/" title="HedgeDoc (formerly CodiMD)">
+        <a class="navbar-brand pull-left header-brand" href="<%- serverURL %>/" title="HedgeDoc">
             <img src="<%- serverURL %>/banner/banner_h_bw.svg" alt="HedgeDoc" class="h-100 no-night">
             <img src="<%- serverURL %>/banner/banner_h_wb.svg" alt="HedgeDoc" class="h-100 night">
         </a>
@@ -70,6 +70,11 @@
                 <li role="presentation"><a role="menuitem" class="ui-help" href="#" data-toggle="modal" data-target=".help-modal"><i class="fa fa-question-circle fa-fw"></i> Help</a>
                 </li>
             </ul>
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn ui-night" title="<%= __('Night Theme') %>">
+                    <input type="checkbox" name="night"><i class="fa fa-moon-o"></i>
+                </label>
+            </div>
             <a class="btn btn-link ui-mode">
                 <i class="fa fa-pencil"></i>
             </a>
@@ -78,14 +83,14 @@
     <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav navbar-form navbar-left" style="padding:0;">
             <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-default ui-view" title="<%= __('View') %> (Ctrl+Alt+V)">
-                    <input type="radio" name="mode" autocomplete="off"><i class="fa fa-eye"></i>
+                <label class="btn btn-default ui-view" for="view-mode-toggle-view" title="<%= __('View') %> (Ctrl+Alt+V)" aria-label="<%= __('View') %> (Ctrl+Alt+V)">
+                    <input type="radio" name="mode" id="view-mode-toggle-view" autocomplete="off"><i class="fa fa-eye"></i>
                 </label>
-                <label class="btn btn-default ui-both" title="<%= __('Both') %> (Ctrl+Alt+B)">
-                    <input type="radio" name="mode" autocomplete="off"><i class="fa fa-columns"></i>
+                <label class="btn btn-default ui-both" for="view-mode-toggle-both" title="<%= __('Both') %> (Ctrl+Alt+B)" aria-label="<%= __('Both') %> (Ctrl+Alt+B)">
+                    <input type="radio" name="mode" id="view-mode-toggle-both" autocomplete="off"><i class="fa fa-columns"></i>
                 </label>
-                <label class="btn btn-default ui-edit" title="<%= __('Edit') %> (Ctrl+Alt+E)">
-                    <input type="radio" name="mode" autocomplete="off"><i class="fa fa-pencil"></i>
+                <label class="btn btn-default ui-edit" for="view-mode-toggle-edit" title="<%= __('Edit') %> (Ctrl+Alt+E)" aria-label="<%= __('Edit') %> (Ctrl+Alt+E)">
+                    <input type="radio" name="mode" id="view-mode-toggle-edit" autocomplete="off"><i class="fa fa-pencil"></i>
                 </label>
             </div>
             <div class="btn-group" data-toggle="buttons">

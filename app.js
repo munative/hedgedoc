@@ -46,7 +46,7 @@ if (config.useSSL) {
   const options = {
     key: fs.readFileSync(config.sslKeyPath, 'utf8'),
     cert: fs.readFileSync(config.sslCertPath, 'utf8'),
-    ca: ca,
+    ca,
     dhparam: fs.readFileSync(config.dhParamPath, 'utf8'),
     requestCert: false,
     rejectUnauthorized: false
@@ -63,14 +63,22 @@ if (!config.useSSL && config.protocolUseSSL) {
   app.set('trust proxy', 1)
 }
 
+// check if the request is from container healthcheck
+function isContainerHealthCheck (req, _) {
+  return req.headers['user-agent'] === 'hedgedoc-container-healthcheck/1.0' && req.ip === '127.0.0.1'
+}
+
 // logger
 app.use(morgan('combined', {
+  skip: isContainerHealthCheck,
   stream: logger.stream
 }))
 
 // Register prometheus metrics endpoint
-app.use(apiMetrics())
-metrics.setupCustomPrometheusMetrics()
+if (config.enableStatsApi) {
+  app.use(apiMetrics())
+  metrics.setupCustomPrometheusMetrics()
+}
 
 // socket io
 const io = require('socket.io')(server, { cookie: false })
@@ -144,7 +152,7 @@ app.use('/uploads', express.static(path.resolve(__dirname, config.uploadsPath), 
 app.use('/default.md', express.static(path.resolve(__dirname, config.defaultNotePath), { maxAge: config.staticCacheTime }))
 
 // session
-app.use(useUnless(['/status', '/metrics'], session({
+app.use(useUnless(['/status', '/metrics', '/_health'], session({
   name: config.sessionName,
   secret: config.sessionSecret,
   resave: false, // don't save session if unmodified
@@ -175,7 +183,7 @@ app.use(flash())
 
 // passport
 app.use(passport.initialize())
-app.use(useUnless(['/status', '/metrics'], passport.session()))
+app.use(useUnless(['/status', '/metrics', '/_health'], passport.session()))
 
 // check uri is valid before going further
 app.use(require('./lib/web/middleware/checkURIValid'))
@@ -206,6 +214,7 @@ app.locals.authProviders = {
   ldap: config.isLDAPEnable,
   ldapProviderName: config.ldap.providerName,
   saml: config.isSAMLEnable,
+  samlProviderName: config.saml.providerName,
   oauth2: config.isOAuth2Enable,
   oauth2ProviderName: config.oauth2.providerName,
   openID: config.isOpenIDEnable,
@@ -236,7 +245,7 @@ app.get('*', function (req, res) {
 io.use(realtime.secure)
 // socket.io auth
 io.use(passportSocketIo.authorize({
-  cookieParser: cookieParser,
+  cookieParser,
   key: config.sessionName,
   secret: config.sessionSecret,
   store: sessionStore,
@@ -286,9 +295,9 @@ function syncAndListen () {
         process.exit(1)
       }
     })
-  }).catch(() => {
+  }).catch((dbError) => {
     if (currentDBTry < maxDBTries) {
-      logger.warn(`Database cannot be reached. Try ${currentDBTry} of ${maxDBTries}.`)
+      logger.warn(`Database cannot be reached. Try ${currentDBTry} of ${maxDBTries}. (${dbError})`)
       currentDBTry++
       setTimeout(function () {
         syncAndListen()
